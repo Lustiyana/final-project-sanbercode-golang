@@ -47,5 +47,5 @@ func main() {
 
 	database.DbMigrate(DB)
 
-	routers.StartServer().Run(os.Getenv("PORT"))
+	routers.StartServer().Run(8082)
 }
