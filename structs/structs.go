@@ -3,8 +3,13 @@ package structs
 type Users struct {
 	ID 					int64		`json:"id"`
 	Name 				string	`json:"name"`
-	Email			 	string 	`json:"_"`
-	Password 		string 	`json:"_"`
+	Email			 	string 	`json:"email"`
+	Password 		string 	`json:"password"`
+}
+
+type UserResponse struct {
+	ID 					int64		`json:"id"`
+	Name 				string	`json:"name"`
 }
 
 type Feeds struct {
@@ -27,7 +32,7 @@ type Comments struct {
 	Message				string	`json:"message"`
 	CreatedAt 		string 	`json:"created_at"`
 	UpdatedAt 		string 	`json:"updated_at"`
-	User 		Users 	`json:"user"`
+	User 		UserResponse 	`json:"user"`
 }
 
 type Likes struct {
@@ -44,7 +49,7 @@ type FeedResponse struct {
 	CreatedAt 		string 	`json:"created_at"`
 	TotalComments int64		`json:"total_comments"`
 	TotalLikes 		int64		`json:"total_likes"`
-	User 					Users		`json:"user"`
+	User 					UserResponse		`json:"user"`
 }
 
 type FeedDetailResponse struct {
@@ -55,20 +60,20 @@ type FeedDetailResponse struct {
 	TotalLikes 		int64		`json:"total_likes"`
 	Comments []CommentResponse		`json:"comments"`
 	Likes []LikeResponse		`json:"likes,omitempty"`
-	User Users		`json:"user"`
+	User UserResponse		`json:"user"`
 }
 
 type CommentResponse struct {
 	ID 						int64		`json:"id"`
 	Message				string	`json:"message"`
 	CreatedAt 		string 	`json:"created_at"`
-	User 		Users 	`json:"user"`
+	User 		UserResponse 	`json:"user"`
 }
 
 type LikeResponse struct {
 	ID 						int64		`json:"id"`
 	CreatedAt 		string 	`json:"created_at"`
-	User Users `json:"user"`
+	User UserResponse `json:"user"`
 }
 
 type Response struct {

@@ -89,12 +89,12 @@ func getLikes(db *sql.DB, feedID int64) ([]structs.LikeResponse, error) {
 	return likes, nil
 }
 
-func getUser(db *sql.DB ,userID int64) (structs.Users, error) {
+func getUser(db *sql.DB ,userID int64) (structs.UserResponse, error) {
 	query := `
 		SELECT id, name FROM users WHERE id = $1
 	`
 
-	var user structs.Users
+	var user structs.UserResponse
 	
 	rows, err := db.Query(query, userID)
 	if err != nil {
@@ -116,20 +116,16 @@ func getUser(db *sql.DB ,userID int64) (structs.Users, error) {
 	return user, nil
 }
 
-func InsertFeed(db *sql.DB, feedData structs.Feeds) (data structs.Feeds, err error) {
-	sql := "INSERT INTO feeds (user_id, message, created_at, updated_at) VALUES ($1, $2, NOW(), NOW()) RETURNING id, created_at, updated_at"
+func InsertFeed(db *sql.DB, feedData structs.Feeds) (err error) {
+	sql := "INSERT INTO feeds (user_id, message, created_at, updated_at) VALUES ($1, $2, NOW(), NOW())"
 
-	var feed structs.Feeds
-	err = db.QueryRow(sql, feedData.UserID, feedData.Message).Scan(&feed.ID, &feed.CreatedAt, &feed.UpdatedAt)
+	_, err = db.Exec(sql, feedData.UserID, feedData.Message)
 	if err != nil {
-			return structs.Feeds{}, err
+			return err
 	}
 
-	feedData.ID = feed.ID
-	feedData.CreatedAt = feed.CreatedAt
-	feedData.UpdatedAt = feed.UpdatedAt
 
-	return feedData, nil
+	return nil
 }
 
 
@@ -230,7 +226,6 @@ func GetAllFeed(db *sql.DB) ([]structs.FeedResponse, error) {
 func GetDetailFeed(db *sql.DB, feedID int64) (result structs.FeedDetailResponse, err error) {
 	var feed structs.Feeds
 
-
 	sql := queryGetDataFeed(feedID)
 	rows, err := db.Query(sql)
 	if err != nil {
@@ -262,6 +257,14 @@ func GetDetailFeed(db *sql.DB, feedID int64) (result structs.FeedDetailResponse,
 	likes, err := getLikes(db, feedID)
 	if err != nil {
 		return structs.FeedDetailResponse{}, err
+	}
+
+	if len(comments) == 0 {
+		comments = []structs.CommentResponse{}
+	}
+	
+	if len(likes) == 0 {
+		likes = []structs.LikeResponse{}
 	}
 
 	feedResponse := structs.FeedDetailResponse{

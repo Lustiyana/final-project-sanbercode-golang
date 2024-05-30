@@ -29,16 +29,16 @@ func InsertFeed(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&feed)
 	if err != nil {
-		panic(err)
+		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal membuat feed", nil, err.Error())
 	}
 
-	data, err := repository.InsertFeed(database.DbConnection, feed)
+	err = repository.InsertFeed(database.DbConnection, feed)
 	if err != nil {
 		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal membuat feed", nil, err.Error())
 		return
 	}
 
-	helpers.GeneralResponse(ctx, http.StatusOK, true, "Berhasil membuat feed", data, nil)
+	helpers.GeneralResponse(ctx, http.StatusOK, true, "Berhasil membuat feed", nil, nil)
 }
 
 func UpdateFeed(ctx *gin.Context) {
@@ -48,7 +48,8 @@ func UpdateFeed(ctx *gin.Context) {
 	
 	err := ctx.ShouldBindJSON(&feed)
 	if err != nil {
-		panic(err)
+		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal memperbarui feed", nil, err.Error())
+		return
 	}
 
 	feed.ID = int64(id)
@@ -75,20 +76,22 @@ func DeleteFeed(ctx *gin.Context) {
 		panic(err)
 	}
 
-	helpers.GeneralResponse(ctx, http.StatusOK, true, "Berhasil delete feed", nil, nil)
+	helpers.GeneralResponse(ctx, http.StatusOK, true, "Berhasil menghapus feed", nil, nil)
 }
 
 func GetDetailFeed(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	
 	if err != nil {
-		panic(err)
+		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal menampilkan detail feed", nil, err.Error())
+		return
 	}
 
 	result, err := repository.GetDetailFeed(database.DbConnection, id)
 
 	if err != nil {
-		panic(err)
+		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal menampilkan detail feed", nil, err.Error())
+		return
 	}
 
 	helpers.GeneralResponse(ctx, http.StatusOK, true, "Berhasil menampilkan detail feed", result, nil)
