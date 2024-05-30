@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -19,7 +18,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token, err := extractToken(auth)
+		token, err := helpers.ExtractToken(auth)
 		if err != nil {
 			unauthorized(c, "Unauthorized: Invalid credentials format")
 			c.Abort()
@@ -37,13 +36,6 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func extractToken(auth string) (string, error) {
-	token := strings.TrimPrefix(auth, "Bearer ")
-	if token == auth {
-		return "", http.ErrNotSupported
-	}
-	return token, nil
-}
 
 func checkCredentials(token string) bool {
 	_, err := helpers.VerifyToken(token)

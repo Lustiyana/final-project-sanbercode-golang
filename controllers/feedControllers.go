@@ -26,8 +26,21 @@ func GetAllFeed(ctx *gin.Context) {
 
 func InsertFeed(ctx *gin.Context) {
 	var feed structs.Feeds
+	tokenWithBearer := ctx.GetHeader("Authorization")
 
-	err := ctx.ShouldBindJSON(&feed)
+	token, err := helpers.ExtractToken(tokenWithBearer)
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := helpers.VerifyToken(token)
+	if err != nil {
+		panic(err)
+	}
+
+	feed.UserID = data.ID
+
+	err = ctx.ShouldBindJSON(&feed)
 	if err != nil {
 		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal membuat feed", nil, err.Error())
 	}

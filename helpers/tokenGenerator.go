@@ -3,6 +3,8 @@ package helpers
 import (
 	"fmt"
 	"time"
+	"net/http"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -10,13 +12,15 @@ import (
 var jwtKey = []byte("1NIP45SW0RD")
 
 type Claims struct {
+	ID int64 `json:"id"`
 	Email string `json:"email"`
 	Password string `json:"password"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(email string, password string) (string, error) {
+func GenerateToken(id int64, email string, password string) (string, error) {
 	claims := &Claims{
+		ID: id,
 		Email: email,
 		Password: password,
 		StandardClaims: jwt.StandardClaims{
@@ -50,4 +54,13 @@ func VerifyToken(tokenString string) (*Claims, error) {
 	}
 
 	return claims, nil
+}
+
+
+func ExtractToken(auth string) (string, error) {
+	token := strings.TrimPrefix(auth, "Bearer ")
+	if token == auth {
+		return "", http.ErrNotSupported
+	}
+	return token, nil
 }

@@ -39,14 +39,14 @@ func Login(ctx *gin.Context) {
 		panic(err)
 	}
 
-	err = repository.Login(database.DbConnection, dataUser)
+	id, err := repository.Login(database.DbConnection, dataUser)
 
 	if err != nil {
 		helpers.GeneralResponse(ctx, http.StatusBadRequest,false, err.Error(), nil, nil)
 		return
 	}
 
-	token, err := helpers.GenerateToken(dataUser.Email, dataUser.Password)
+	token, err := helpers.GenerateToken(id, dataUser.Email, dataUser.Password)
 	if err != nil {
 		fmt.Println("Error generating token:", err)
 		return

@@ -13,7 +13,21 @@ import (
 func InsertLike(ctx *gin.Context) {
 	var like structs.Likes
 
-	err := ctx.ShouldBindJSON(&like)
+	tokenWithBearer := ctx.GetHeader("Authorization")
+
+	token, err := helpers.ExtractToken(tokenWithBearer)
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := helpers.VerifyToken(token)
+	if err != nil {
+		panic(err)
+	}
+
+	like.UserID = data.ID
+
+	err = ctx.ShouldBindJSON(&like)
 	if err != nil {
 		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal menyukai", nil, err.Error())
 	}

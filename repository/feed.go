@@ -200,6 +200,7 @@ func GetAllFeed(db *sql.DB) ([]structs.FeedResponse, error) {
 
 		user, err := getUser(db, feed.UserID)
 		if err != nil {
+			panic(err)
 			return nil, err
 		}
 

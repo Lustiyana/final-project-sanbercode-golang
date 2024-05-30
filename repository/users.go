@@ -31,19 +31,20 @@ func Register(db *sql.DB, dataUser structs.Users) error {
 }
 
 
-func Login(db *sql.DB, dataUser structs.Users) error {
-	checkUserExist := "SELECT email, password FROM users WHERE email = $1"
+func Login(db *sql.DB, dataUser structs.Users) (int64, error) {
+	checkUserExist := "SELECT id, email, password FROM users WHERE email = $1"
 
 	var user structs.Users
-	data := db.QueryRow(checkUserExist, dataUser.Email).Scan(&user.Email, &user.Password)
+	data := db.QueryRow(checkUserExist, dataUser.Email).Scan(&user.ID, &user.Email, &user.Password)
+
 
 	if data == sql.ErrNoRows {
-		return errors.New("Email tidak ditemukan")
+		return 0, errors.New("Email tidak ditemukan")
 	} 
 
 	if user.Password != dataUser.Password {
-		return errors.New("Password Salah")
+		return 0, errors.New("Password Salah")
 	}
 
-	return nil
+	return user.ID, nil
 }

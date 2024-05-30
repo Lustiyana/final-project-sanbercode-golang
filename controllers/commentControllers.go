@@ -14,7 +14,21 @@ import (
 func InsertComment(ctx *gin.Context) {
 	var comment structs.Comments
 
-	err := ctx.ShouldBindJSON(&comment)
+	tokenWithBearer := ctx.GetHeader("Authorization")
+
+	token, err := helpers.ExtractToken(tokenWithBearer)
+	if err != nil {
+		panic(err)
+	}
+
+	data, err := helpers.VerifyToken(token)
+	if err != nil {
+		panic(err)
+	}
+
+	comment.UserID = data.ID
+
+	err = ctx.ShouldBindJSON(&comment)
 	if err != nil {
 		helpers.GeneralResponse(ctx, http.StatusBadRequest, false, "Gagal membuat komentar", nil, err.Error())
 		return
